@@ -1,3 +1,15 @@
 from django.contrib import admin
+from manager.models import Book, Comment
 
-# Register your models here.
+
+class CommentAdmin(admin.StackedInline):
+    model = Comment
+    extra = 2
+
+
+class BookAdmin(admin.ModelAdmin):
+    inlines = [CommentAdmin]
+
+
+admin.site.register(Book, BookAdmin)
+

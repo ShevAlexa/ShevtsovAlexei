@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{{ user }}
+
+    {% for b in books %}
+        <h3>{{ b.authors.all }}</h3>
+        <h3>{{ b.title }}</h3>
+        <h4>{{ b.date }}</h4>
+        <h5>{{ b.text }}</h5>
+        <h4>{{ b.comments.count }}</h4>
+        {% for comment in b.comments.all %}
+            <h4>{{ comment.text }}</h4>
+            <h4>{{ comment.date }}</h4>
+            <h4>{{ comment.author }}</h4>
+        {% endfor %}
+        <br>
+    {% endfor %}
+</body>
+</html>
