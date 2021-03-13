@@ -14,8 +14,9 @@ class Book(models.Model):
     date = models.DateTimeField(auto_now_add=True, null=True)
     text = models.TextField(null=True)
     authors = models.ManyToManyField(User, related_name="books")
-    # likes = models.PositiveIntegerField(default=0)
-    likes1 = models.ManyToManyField(User, through="manager.LikeBookUser", related_name="Liked_books")
+    likes = models.PositiveIntegerField(default=0)
+    users_like = models.ManyToManyField(User, through="manager.LikeBookUser", related_name="Liked_books")
+
 
     def __str__(self):
         return f'{self.title}-{self.id: 50}' #the length of string
@@ -33,12 +34,32 @@ class LikeBookUser(models.Model):
             super().save(**kwargs)
         except:
             LikeBookUser.objects.get(user=self.user, book=self.book).delete()
-
+            self.book.likes -= 1
+        else:
+            self.book.likes += 1
+        self.book.save()
 
 class Comment(models.Model):
     text = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    users_like = models.ManyToManyField(
+        User,
+        through="manager.LikeCommentUser",
+        related_name="liked_comment"
+    )
 
 
+class LikeCommentUser(models.Model):
+    class Meta:
+        unique_together = ("user", "comment")
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_comment_table")
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="liked_user_table")
+
+    def save(self, **kwargs):
+        try:
+            super().save(**kwargs)
+        except:
+            LikeCommentUser.objects.get(user=self.user, comment=self.comment).delete()
