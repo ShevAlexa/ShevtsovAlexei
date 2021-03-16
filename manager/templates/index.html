@@ -8,20 +8,20 @@
         <h5>{{ b.date }}</h5>
         <h2>{{ b.text }}</h2>
         <h4>Authors of book: {{ b.authors.all }}</h4>
-        <a href="{% url 'add-like' id=b.id %}"><h3>Likes: {{ b.likes }}</h3></a>
-        {% for i in "12345" %}
-            {% if rate < i %}
+        {{ b.rate }}
+        {% for i in range %}
+            {% if b.rate >= i %}
                 <a href="{% url 'add-rate' id=b.id rate=i%}">
-                    <span class="fa fa-star"></span>
+                    <span class="fa fa-star checked"></span>
                 </a>
             {% else %}
                 <a href="{% url 'add-rate' id=b.id rate=i%}">
-                    <span class="fa fa-star checked"></span>
+                    <span class="fa fa-star"></span>
                 </a>
             {% endif %}
         {% endfor %}
         {% for comment in b.comments.all %}
-            <h4>{{ comment.text }}</h4>
+            <h3>{{ comment.text }}</h3>
             <h5>{{ comment.date }}</h5>
             <h6>{{ comment.author }}</h6>
             <a href="{% url 'add-like-to-comment' id=comment.id %}">

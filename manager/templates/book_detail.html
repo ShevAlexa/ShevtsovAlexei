@@ -5,14 +5,13 @@
 <h5>{{ book.date }}</h5>
 <h2>{{ book.text }}</h2>
 <h4>Authors of book: {{ book.authors.all }}</h4>
-<a href="{% url 'add-like' id=book.id %}"><h3>Likes: {{ book.likes }}</h3></a>
 {% for i in "12345" %}
     {% if rate < i %}
-        <a href="{% url 'add-rate' id=book.id rate=i%}">
+        <a href="{% url 'add-rate-location' id=book.id rate=i location=1 %}">
             <span class="fa fa-star"></span>
         </a>
     {% else %}
-        <a href="{% url 'add-rate' id=book.id rate=i%}">
+        <a href="{% url 'add-rate-location' id=book.id rate=i location=1 %}">
             <span class="fa fa-star checked"></span>
         </a>
     {% endif %}
