@@ -2,20 +2,23 @@
 
 {% block main %}
 
+<a href="{% url 'login' %}">Login</a>
+<a href="{% url 'logout' %}">Logout</a>
+
 {{ user }}
     {% for b in books %}
-        <a href="{% url 'book-detail' id=b.id %}"><h1>{{ b.title }}</h1></a>
+        <a href="{% url 'book-detail' slug=b.slug %}"><h1>{{ b.title }}</h1></a>
         <h5>{{ b.date }}</h5>
         <h2>{{ b.text }}</h2>
         <h4>Authors of book: {{ b.authors.all }}</h4>
         {{ b.rate }}
         {% for i in range %}
             {% if b.rate >= i %}
-                <a href="{% url 'add-rate' id=b.id rate=i%}">
+                <a href="{% url 'add-rate' slug=b.slug rate=i%}">
                     <span class="fa fa-star checked"></span>
                 </a>
             {% else %}
-                <a href="{% url 'add-rate' id=b.id rate=i%}">
+                <a href="{% url 'add-rate' slug=b.slug rate=i%}">
                     <span class="fa fa-star"></span>
                 </a>
             {% endif %}
@@ -30,5 +33,33 @@
         {% endfor %}
         <br>
     {% endfor %}
+<br>
+<br>
+
+
+<!--{% if user.is_authenticated %}-->
+<!--<form action="{% url 'add-book' %}" method="post">-->
+<!--    {% csrf_token %}-->
+<!--    <div class="form-group">-->
+<!--        <label  for="title">Title for book</label><br>-->
+<!--        <input class="form-control" type="text" id="title" name="title" placeholder="Enter the title"><br>-->
+<!--        <label for="comment">Comment:</label>-->
+<!--        <textarea class="form-control" rows="5" id="comment" placeholder="Text"></textarea>-->
+<!--    </div>-->
+<!--    <input type="submit" value="Добавить Книгу">-->
+<!--</form>-->
+<!--{% endif %}-->
+<!--<br>-->
+<!--<br>-->
+
+{% if user.is_authenticated %}
+<form action="{% url 'add-book' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="OK">
+</form>
+{% endif %}
+
+<br>
 
 {% endblock %}

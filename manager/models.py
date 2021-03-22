@@ -9,16 +9,17 @@ class Book(models.Model):
     title = models.CharField(
         max_length=50,
         verbose_name="название",
-        help_text="ну эт тип погоняло"
+        help_text="ну эт тип погоняло",
+        db_index=True
         )
     date = models.DateTimeField(auto_now_add=True, null=True)
-    text = models.TextField(null=True)
+    text = models.TextField()
     authors = models.ManyToManyField(User, related_name="books")
     rate = models.DecimalField(decimal_places=2, max_digits=3, default=0.0)
     count_rated_users = models.PositiveIntegerField(default=0)
     count_all_stars = models.PositiveIntegerField(default=0)
     users_like = models.ManyToManyField(User, through="manager.LikeBookUser", related_name="Liked_books")
-    slug = models.SlugField(null=True, unique=True)
+    slug = models.SlugField(null=True, unique=True, db_index=True)
 
     def __str__(self):
         return f'{self.title}-{self.id:5}' #the length of name-string
@@ -79,3 +80,7 @@ class LikeCommentUser(models.Model):
             super().save(**kwargs)
         except:
             LikeCommentUser.objects.get(user=self.user, comment=self.comment).delete()
+
+
+class TestTale(models.Model):
+    title = models.CharField(max_length=50, primary_key=True)
