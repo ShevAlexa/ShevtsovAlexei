@@ -8,29 +8,13 @@ from manager.models import Book, Comment, LikeCommentUser
 from manager.models import LikeBookUser as RateBookUser
 
 
-def hello(request, digit=None):
-    if digit is not None:
-        return HttpResponse(f"hello is {digit}")
-    return HttpResponse("hello world")
-
-
-# class MyPage(View):
-#     def get(self, request):
-#         context = {}
-#         comment_query = Comment.objects.all().annotate(count_like=Count("users_like")).select_related('author')
-#         comments = Prefetch("comments", comment_query)
-#         books = Book.objects.prefetch_related("authors", comments)
-#         context['books'] = books.annotate(count_like=Count("users_like"), count_comment=Count("comments"))
-#         return render(request, "index.html", context)
-
-
 class MyPage(View):
     def get(self, request):
         context = {}
         comment_query = Comment.objects.all().annotate(count_like=Count("users_like"))\
                                     .select_related('author')
         comments = Prefetch("comments", comment_query)
-        context['books'] = Book.objects.prefetch_related("authors", comments)
+        context['books'] = Book.objects.prefetch_related("authors", comments).order_by("rate", "date") #sorted
         context['range'] = range(1, 6)
         context['form'] = BookForm()
         return render(request, "index.html", context)
@@ -61,8 +45,7 @@ class AddLike2Comment(View):
 class AddRate2Book(View):
     def get(self, request, slug, rate, location=None):
         if request.user.is_authenticated:
-            book_id = Book.objects.get(slug=slug).id
-            RateBookUser.objects.create(user=request.user, book_id=book_id, rate=rate)
+            RateBookUser.objects.create(user=request.user, book_id=slug, rate=rate)
         if location is None:
             return redirect("the-main-page")
         return redirect("book-detail", slug=slug)

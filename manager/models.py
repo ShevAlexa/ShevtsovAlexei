@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from slugify import slugify
 
+
 class Book(models.Model):
     class Meta:
         verbose_name = "Книга"
@@ -13,32 +14,35 @@ class Book(models.Model):
         db_index=True
         )
     date = models.DateTimeField(auto_now_add=True, null=True)
-    text = models.TextField()
+    text = models.TextField(null=True)
     authors = models.ManyToManyField(User, related_name="books")
     rate = models.DecimalField(decimal_places=2, max_digits=3, default=0.0)
     count_rated_users = models.PositiveIntegerField(default=0)
     count_all_stars = models.PositiveIntegerField(default=0)
     users_like = models.ManyToManyField(User, through="manager.LikeBookUser", related_name="Liked_books")
-    slug = models.SlugField(null=True, unique=True, db_index=True)
+    slug = models.SlugField(primary_key=True)
+    # uuid = models.UUIDField()
 
     def __str__(self):
         return f'{self.title}-{self.id:5}' #the length of name-string
 
-    def save(self, **kwargs):
-        if self.id is None:
-            self.slug = slugify(self.title)
-        try:
-            super().save(**kwargs)
-        except:
-            self.slug += str(self.id)
-            super().save(**kwargs)
+    # def save(self, **kwargs):
+    #     if self.id is None:
+    #         self.slug = slugify(self.title)
+    #     try:
+    #         super().save(**kwargs)
+    #     except:
+    #         self.slug += str(self.id)
+    #         super().save(**kwargs)
+
 
 class LikeBookUser(models.Model):
     class Meta:
         unique_together = ("user", "book")
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_book_table")
-    book: Book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="liked_user_table")
+    book: Book = models.ForeignKey(
+        Book, on_delete=models.CASCADE, related_name="liked_user_table", null=True)
     rate = models.PositiveIntegerField(default=5)
 
     def save(self, **kwargs):
@@ -59,7 +63,8 @@ class LikeBookUser(models.Model):
 class Comment(models.Model):
     text = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="comments")
+    book = models.ForeignKey(
+        Book, on_delete=models.CASCADE, related_name="comments", null=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     users_like = models.ManyToManyField(
         User,
@@ -80,7 +85,3 @@ class LikeCommentUser(models.Model):
             super().save(**kwargs)
         except:
             LikeCommentUser.objects.get(user=self.user, comment=self.comment).delete()
-
-
-class TestTale(models.Model):
-    title = models.CharField(max_length=50, primary_key=True)
