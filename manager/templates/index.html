@@ -23,34 +23,17 @@
                 </a>
             {% endif %}
         {% endfor %}
-        {% for comment in b.comments.all %}
-            <h3>{{ comment.text }}</h3>
-            <h5>{{ comment.date }}</h5>
-            <h6>{{ comment.author }}</h6>
-            <a href="{% url 'add-like-to-comment' id=comment.id %}">
-                <h5>Likes: {{ comment.count_like}}</h5>
+        {% if b.is_owner %}
+            <a href="{% url 'delete-book' slug=b.slug %}">
+                <i><input class="btn btn-danger" type="button" value="Delete Book"></i>
             </a>
-        {% endfor %}
-        <br>
+            <a href="{% url 'update-book' slug=b.slug %}">
+                <i><input class="btn btn-light" type="button" value="Update Book"></i>
+            </a>
+        {% endif %}
     {% endfor %}
 <br>
 <br>
-
-
-<!--{% if user.is_authenticated %}-->
-<!--<form action="{% url 'add-book' %}" method="post">-->
-<!--    {% csrf_token %}-->
-<!--    <div class="form-group">-->
-<!--        <label  for="title">Title for book</label><br>-->
-<!--        <input class="form-control" type="text" id="title" name="title" placeholder="Enter the title"><br>-->
-<!--        <label for="comment">Comment:</label>-->
-<!--        <textarea class="form-control" rows="5" id="comment" placeholder="Text"></textarea>-->
-<!--    </div>-->
-<!--    <input type="submit" value="Добавить Книгу">-->
-<!--</form>-->
-<!--{% endif %}-->
-<!--<br>-->
-<!--<br>-->
 
 {% if user.is_authenticated %}
 <form action="{% url 'add-book' %}" method="post">
